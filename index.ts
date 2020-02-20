@@ -5,7 +5,7 @@ import bodyParse from 'body-parser';
 
 import cors from 'cors';
 
-const server = new Server();
+const server = Server.instance;
 
 // BodyParser
 // Lo que sea que me posteen tomalo y transformalo a un objeto de javascript
