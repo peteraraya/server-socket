@@ -1,5 +1,6 @@
 
 import {Router, Request, Response} from 'express';
+import Server from '../classes/server';
 
 const router = Router();
 
@@ -22,6 +23,13 @@ router.post("/mensajes", (req: Request, res: Response) => {
   const cuerpo = req.body.cuerpo;
   const de     = req.body.cuerpo;
 
+  // Emitir clase global
+  const payload = {cuerpo,de};
+  const server = Server.instance;
+  server.io.emit('mensaje-nuevo',payload);
+
+
+  // Respuesta
   res.json({
     ok: true,
     cuerpo,
@@ -39,7 +47,21 @@ router.post("/mensajes/:id", (req: Request, res: Response) => {
   const de     = req.body.cuerpo;
   const id     = req.params.id;
 
+  // Conectar nuestro servicio rest con nuestro servidor de socket
 
+  const payload ={
+    de,
+    cuerpo
+  }
+
+  //Instancia de nuestro server
+  const server = Server.instance;
+
+  // enviar mensaje a 1 o a todos los usuarios
+  server.io.in( id ).emit('mensaje-privado', payload);
+
+
+// Respuesta
   res.json({
     ok: true,
     cuerpo,
