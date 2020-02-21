@@ -4,10 +4,38 @@ import { usuariosConectados } from '../sockets/sockets';
 
 import Server from '../classes/server';
 import { GraficaData } from '../classes/grafica';
+import { EncuestaData } from '../classes/encuesta';
 
 const router = Router();
 
 const grafica = new GraficaData();
+
+const encuesta = new EncuestaData();
+
+
+// [Encuesta] Servicio REST  -> GET
+router.get('/encuesta', (req: Request, res: Response) => {
+
+  res.json(encuesta.getDataGraficaEncuesta());
+
+});
+
+// [Encuesta] Servicio REST  -> POST
+router.post('/encuesta', (req: Request, res: Response) => {
+
+  // Leer la info en caso de que una de estas no se envie se enviará un undefined
+  const opcion   = Number(req.body.opcion);
+  const unidades = Number(req.body.unidades);
+
+  encuesta.incrementarValor(opcion, unidades);
+
+  const server = Server.instance;
+  server.io.emit('cambio-encuesta', encuesta.getDataGraficaEncuesta());
+
+
+  res.json(encuesta.getDataGraficaEncuesta());
+
+});
 
 
 // Servicio REST  -> GET
@@ -35,6 +63,8 @@ router.post("/grafica", (req: Request, res: Response) => {
     res.json( grafica.getDataGrafica());
 
 });
+
+
 // GET
 router.get('/mensajes',(req:Request,res:Response)=>{
     // Enviar un mensaje de respuesta
