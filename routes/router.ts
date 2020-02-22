@@ -1,16 +1,31 @@
 
 import {Router, Request, Response} from 'express';
-import { usuariosConectados } from '../sockets/sockets';
+import { usuariosConectados, mapa } from '../sockets/sockets';
 
 import Server from '../classes/server';
 import { GraficaData } from '../classes/grafica';
 import { EncuestaData } from '../classes/encuesta';
+
 
 const router = Router();
 
 const grafica = new GraficaData();
 
 const encuesta = new EncuestaData();
+
+
+
+
+// [Mapa] Servicio REST  -> GET
+router.get('/mapa', (req: Request, res: Response) => {
+
+  res.json(mapa.getMarcadores());
+
+});
+
+// [Mapa] Servicio REST  -> POST
+
+
 
 
 // [Encuesta] Servicio REST  -> GET
@@ -38,14 +53,14 @@ router.post('/encuesta', (req: Request, res: Response) => {
 });
 
 
-// Servicio REST  -> GET
+// [Grafica] Servicio REST  -> GET
 router.get('/grafica', (req: Request, res: Response) => {
   
   res.json(grafica.getDataGrafica());
 
 });
 
-// Servicio REST  -> POST
+// [Grafica] Servicio REST  -> POST
 router.post("/grafica", (req: Request, res: Response) => {
 
   // Leer la info en caso de que una de estas no se envie se enviará un undefined
@@ -65,7 +80,7 @@ router.post("/grafica", (req: Request, res: Response) => {
 });
 
 
-// GET
+//[Mensajes] Servicio REST  -> GET
 router.get('/mensajes',(req:Request,res:Response)=>{
     // Enviar un mensaje de respuesta
 
@@ -76,7 +91,7 @@ router.get('/mensajes',(req:Request,res:Response)=>{
 });
 
 
-// POST 
+// [Mensajes] Servicio REST  -> POST
 router.post("/mensajes", (req: Request, res: Response) => {
   // Enviar un mensaje de respuesta
 
@@ -99,7 +114,7 @@ router.post("/mensajes", (req: Request, res: Response) => {
 
 });
 
-// POST con id: utilizado para enviar un mensaje privado
+// [Mensajes] POST con id: utilizado para enviar un mensaje privado
 router.post("/mensajes/:id", (req: Request, res: Response) => {
   // Enviar un mensaje de respuesta
 

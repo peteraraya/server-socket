@@ -2,15 +2,51 @@ import { Socket } from 'socket.io';
 import socketIO from 'socket.io';
 import { UsuariosLista } from '../classes/usuarios-lista';
 import { Usuario } from '../classes/usuario';
-
+import { Mapa } from '../classes/mapa';
+import { Marcador } from '../classes/marcador';
 export const usuariosConectados = new UsuariosLista();
+
+export const mapa = new Mapa();
+// Eventos de Mapa
+
+
+export const mapaSockets = (cliente: Socket, io: socketIO.Server) => {
+    // El cliente = instancia de la app | io = servidor de los socket conectados
+    
+    // Escuchamos cuando el cliente emite algo
+    cliente.on('marcador-nuevo',( marcador:Marcador)=>{
+        // En el mapa debemos adicionar este objeto al mapa
+        mapa.agregarMarcador(marcador);
+            
+        // envio mensaje (emisión) a todo el mundo menos el que lo emite
+        // payload: sera el marcador que recibi como argumento
+        cliente.broadcast.emit('marcador-nuevo', marcador); 
+    });
+    // BORRAR
+    cliente.on('marcador-borrar', (id: string) => {
+        mapa.borrarMarcador( id );
+        cliente.broadcast.emit('marcador-borrar', id); 
+    });
+    // BORRAR
+    cliente.on('marcador-mover', (marcador: Marcador) => {
+        mapa.moverMarcador(marcador);
+        cliente.broadcast.emit('marcador-mover', marcador);
+    });
+}
+
+
+
+
+
+
+
+
 
 export const conectarCliente = (cliente: Socket, io: socketIO.Server) =>{
     // Nos creamos una nueva instancia de un usuario
     const usuario = new Usuario( cliente.id);
 
     usuariosConectados.agregar( usuario);
-
     
 }
 //======================================================================
