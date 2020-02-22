@@ -4,12 +4,54 @@ import { UsuariosLista } from '../classes/usuarios-lista';
 import { Usuario } from '../classes/usuario';
 import { Mapa } from '../classes/mapa';
 import { Marcador } from '../classes/marcador';
+import { mapaGoogle } from '../routes/router';
+
 export const usuariosConectados = new UsuariosLista();
-
 export const mapa = new Mapa();
-// Eventos de Mapa
+
+// Eventos de Mapa Google
+
+export const marcadorGoogleNuevo = (cliente: Socket) => {
+    
+    cliente.on('marcador-nuevo', (marcador) =>{
+        console.log(marcador);
+        // agrega marcadores en todas las pantallas
+        mapaGoogle.agregarMarcador( marcador );
+        // emite cambios en todos lados, evitamos dependencia del io
+        cliente.broadcast.emit('marcador-nuevo',marcador);
+        // cliente.brodcast  evita que aparescan dos veces las emisiones
+    
+    });
+}
+
+export const marcadorGoogleBorrar = (cliente: Socket) => {
+
+    cliente.on('marcador-borrar', (id:string) => {
+        console.log(id);
+        // agrega marcadores en todas las pantallas
+        mapaGoogle.borrarMarcador(id);
+        // emite cambios en todos lados, evitamos dependencia del io
+        cliente.broadcast.emit('marcador-borrar', id);
+        // cliente.brodcast  evita que aparescan dos veces las emisiones
+
+    });
+}
+
+export const marcadorGoogleMover = (cliente: Socket) => {
+
+    cliente.on('marcador-mover', (marcador) => {
+        console.log(marcador);
+        // agrega marcadores en todas las pantallas
+        mapaGoogle.moverMarcador(marcador);
+        // emite cambios en todos lados, evitamos dependencia del io
+        cliente.broadcast.emit('marcador-mover', marcador);
+        // cliente.brodcast  evita que aparescan dos veces las emisiones
+
+    });
+}
 
 
+// Eventos de Mapa mapbox
 export const mapaSockets = (cliente: Socket, io: socketIO.Server) => {
     // El cliente = instancia de la app | io = servidor de los socket conectados
     
@@ -35,13 +77,6 @@ export const mapaSockets = (cliente: Socket, io: socketIO.Server) => {
 }
 
 
-
-
-
-
-
-
-
 export const conectarCliente = (cliente: Socket, io: socketIO.Server) =>{
     // Nos creamos una nueva instancia de un usuario
     const usuario = new Usuario( cliente.id);
@@ -49,6 +84,8 @@ export const conectarCliente = (cliente: Socket, io: socketIO.Server) =>{
     usuariosConectados.agregar( usuario);
     
 }
+
+
 //======================================================================
 // Configuración de las opciones de los sockets 
 // ( toda la Lógica centralizada)

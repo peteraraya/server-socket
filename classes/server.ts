@@ -7,6 +7,7 @@ import socketIO from 'socket.io';
 import http from 'http';
 import * as socket from '../sockets/sockets';
 
+
 export default class Server{
     
     private static _instance:Server;
@@ -46,6 +47,11 @@ export default class Server{
 
                 // Conectar Cliente
                 socket.conectarCliente(cliente, this.io);
+
+                // GoogleMaps
+                socket.marcadorGoogleNuevo(cliente);
+                socket.marcadorGoogleBorrar(cliente);
+                socket.marcadorGoogleMover(cliente);
 
                 // Configuración de mapas : servidor este pendiente de los cambios de mapas
                 socket.mapaSockets(cliente, this.io);
